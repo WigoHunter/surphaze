@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans|Oxygen');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #E5E3E0;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  font-family: 'Oxygen', 'Open Sans', sans-serif;
+}

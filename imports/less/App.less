@@ -1,0 +1,207 @@
+@primary: #3498DB;
+@lightBlue: #3FD1CB;
+@yellow: #f9e75e;
+@paddingRight: 80px - 60vw;
+
+.app {
+    height: 100vh;
+    width: 100vw;
+    background: @primary;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    & h1 {
+        color: #FFF;
+    }
+}
+
+/* From old Outwerspace */
+
+.forum {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 60vw;
+    background: @lightBlue;
+    z-index: 100;
+    opacity: 0.9;
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.6);
+    transition: all 0.6s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    & h2 {
+        font-size: 28px;
+
+        & span {
+            color: @yellow;
+        }
+    }
+
+    & p {
+        font-size: 18px;
+        opacity: 0.7;
+        margin: 5px 0;
+    }
+
+    &.hide {
+        right: calc(~"50px - 60vw");
+
+        & .tools .top .close {
+            transform: rotate(0);
+        }
+    }
+
+    & .ask-for-location {
+
+        & button {
+            background-color: @lightBlue;
+            text-transform: uppercase;
+            border: 1px solid @primary;
+            padding: 10px 15px;
+            border-radius: 100px;
+            margin: 15px 0 0;
+            outline: 0;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: scale(1.1);
+                background-color: @yellow;
+                border-color: @yellow;
+            }
+        }
+    }
+
+    & .tools {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        padding: 20px 0;
+        width: 50px;
+        height: 100vh;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+
+        & .top {
+            & .close {
+                transform: rotate(45deg);
+                transition: transform 0.6s ease;
+                font-weight: bold;
+                color: #666;
+                font-size: 24px;
+                cursor: pointer;
+                z-index: 100;
+            }
+        }
+
+        & .bot {
+            & .user-pic {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    }
+}
+
+button {
+    font-family: Helvetica, sans-serif;
+    font-weight: 600;
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.facebook-button {
+    font-family: Helvetica, sans-serif;
+    font-weight: 600;
+    -webkit-font-smoothing: antialiased;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all .3s;
+    background-color: #4c69ba;
+    border: 1px solid #4c69ba;
+    padding: 10px 15px;
+    border-radius: 100px;
+    margin: 15px 0 0;
+    outline: 0;
+
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.toast-for-location {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 12px;
+    cursor: default;
+
+    & p {
+        font-size: 10px;
+    }
+
+    & > div {
+        display: flex;
+        flex-direction: row;
+        margin-top: 8px;
+
+        & button {
+            outline: 0;
+            background-color: @lightBlue;
+            font-size: 14px;
+            color: #FFF;
+            border: none;
+            box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.6);
+            padding: 3px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+
+            &:nth-child(2) {
+                background-color: rgb(255, 217, 2);
+                margin-left: 10px;
+            }
+        }
+    }
+}
+
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10000;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    & img {
+        width: 150px;
+    }
+}
+
+.absolute-hide {
+    display: none;
+    opacity: 0;
+}

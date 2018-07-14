@@ -1,0 +1,30 @@
+{
+  "name": "surphaze",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "prepush": "./node_modules/.bin/eslint --ext .jsx,.js ./",
+    "test": "meteor test --once --driver-package meteortesting:mocha",
+    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "visualize": "meteor --production --extra-packages bundle-visualizer"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.0.0-beta.51",
+    "meteor-node-stubs": "^0.4.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "meteor": {
+    "mainModule": {
+      "client": "client/main.js",
+      "server": "server/main.js"
+    },
+    "testModule": "tests/main.js"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.6",
+    "eslint": "^5.1.0",
+    "eslint-plugin-react": "^7.10.0",
+    "husky": "^0.14.3"
+  }
+}
