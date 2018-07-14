@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import MapComponent from "./MapComponent";
+import Forum from "./Forum";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 // Styles
 import "../less/App.less";
@@ -10,9 +13,12 @@ class App extends Component {
 	
 	render() {
 		return (
-			<div className="app">
-				<h1>Hello World</h1>
-			</div>
+			<Router>
+				<div className="app-container">
+					<MapComponent />
+					<Route path="/" component={Forum} />
+				</div>
+			</Router>
 		);
 	}
 }
