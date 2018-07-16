@@ -3,23 +3,20 @@ import { Meteor } from "meteor/meteor";
 import { withTracker } from "meteor/react-meteor-data";
 import PropTypes from "prop-types";
 
+// Redux
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import forumActionCreators from "./actions/forum-actions";
+
 class Forum extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			hide: false,
-		};
-
-		this.toggleForum = this.toggleForum.bind(this);
 	}
 
 	toggleForum() {
 		if (Meteor.userId()) {
-			this.setState({
-				hide: !this.state.hide
-			});
-		} 
+			this.props.forumActions.toggleForum();
+		}
 
 		/*
 		else if (!toast.isActive(this.toastId)) {
@@ -40,8 +37,10 @@ class Forum extends React.Component {
 	}
 
 	render() {
+		const { forumHidden } = this.props;
+
 		return (
-			<div className={`forum ${this.state.hide && "hide"}`}>
+			<div className={`forum ${forumHidden && "hide"}`}>
 				<div className="tools">
 					<div className="top">
 						<p className="close" onClick={() => this.toggleForum()}>＋</p>
@@ -63,9 +62,23 @@ class Forum extends React.Component {
 
 Forum.propTypes = {
 	loggingIn: PropTypes.bool,
+	forumHidden: PropTypes.bool,
+	forumActions: PropTypes.object
 };
 
-export default withTracker((props) => {
+function mapStateToProps(state) {
+	return {
+		forumHidden: state.forums.forumHidden
+	};
+}
+
+function mapDispatchToProps(dispatch) {
+	return {
+		forumActions: bindActionCreators(forumActionCreators, dispatch)
+	};
+}
+
+const ForumContainer = withTracker((props) => {
 	const loggingIn = Meteor.loggingIn();
 	
 	return {
@@ -73,3 +86,5 @@ export default withTracker((props) => {
 		loggingIn
 	};
 })(Forum);
+
+export default connect(mapStateToProps, mapDispatchToProps)(ForumContainer);
