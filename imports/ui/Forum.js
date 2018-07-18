@@ -1,5 +1,6 @@
 import React from "react";
 import { Meteor } from "meteor/meteor";
+import { Route, Link, Switch } from "react-router-dom";
 import { withTracker } from "meteor/react-meteor-data";
 import PropTypes from "prop-types";
 
@@ -8,7 +9,17 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import forumActionCreators from "./actions/forum-actions";
 
+// Pages
+import Profile from "./Profile";
+import Landing from "./Landing";
+
 class Forum extends React.Component {
+	static propTypes = {
+		loggingIn: PropTypes.bool,
+		forumHidden: PropTypes.bool,
+		forumActions: PropTypes.object
+	};
+
 	constructor(props) {
 		super(props);
 	}
@@ -28,14 +39,6 @@ class Forum extends React.Component {
 		*/
 	}
 
-	login() {
-		Meteor.loginWithFacebook({requestPermissions: ["public_profile", "email"]}, (err) => {
-			if (err) {
-				alert("Login Failed: Come back later :)");
-			}
-		});
-	}
-
 	render() {
 		const { forumHidden } = this.props;
 
@@ -46,37 +49,39 @@ class Forum extends React.Component {
 						<p className="close" onClick={() => this.toggleForum()}>＋</p>
 					</div>
 					<div className="bot">
-						{!this.props.loggingIn &&
-							<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div>
+						{!this.props.loggingIn && Meteor.user() &&
+							<Link to="/profile"><div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div></Link>
 						}
+						<Link to="/"><img className="small-logo" src="/small-logo.svg" alt="logo" /></Link>
 					</div>
 				</div>
 
-				<div className="welcome">
-					<h2>Hello <span onClick={() => this.login()}>Surphaze</span></h2>
-				</div>
+				{
+					this.props.loggingIn
+						? 
+						<img src="/spinner.svg" className="spinner" alt="spinner" />
+						:
+						<Switch>
+							<Route exact path="/" component={Landing} />
+							<Route path="/profile" component={Profile} />
+						</Switch>
+				}
 			</div>
 		);
 	}
 }
 
-Forum.propTypes = {
-	loggingIn: PropTypes.bool,
-	forumHidden: PropTypes.bool,
-	forumActions: PropTypes.object
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = state => {
 	return {
 		forumHidden: state.forums.forumHidden
 	};
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = dispatch => {
 	return {
 		forumActions: bindActionCreators(forumActionCreators, dispatch)
 	};
-}
+};
 
 const ForumContainer = withTracker((props) => {
 	const loggingIn = Meteor.loggingIn();

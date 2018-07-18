@@ -1,6 +1,7 @@
 import React from "react";
 import { Meteor } from "meteor/meteor";
 import { render } from "react-dom";
+import { Tracker } from "meteor/tracker";
 
 // Redux
 import { Provider } from "react-redux";
@@ -16,6 +17,11 @@ const store = createStore(
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 Meteor.startup(() => {
+	Tracker.autorun(() => {
+		Meteor.subscribe("userData");
+		// redux get location?
+	});
+
 	render(
 		<Provider store={store}>
 			<App />
