@@ -5,6 +5,8 @@ import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-map
 import mapStyle from "../../map.json";
 import { keys } from "../../keys.json";
 
+import { connect } from "react-redux";
+
 class MapComponent extends React.Component {
 	constructor(props) {
 		super(props);
@@ -43,13 +45,18 @@ const Map = compose(
 		ref={props.onMapMounted}
 		onClick={props.onClicked}
 		zoom={2}
-		center={{ lat: 0, lng: 0 }}
+		center={props.isLoaded && props.user.surphaze.location != null
+			? 
+			{
+				lat: props.user.surphaze.location.lat,
+				lng: props.user.surphaze.location.lng,
+			}
+			: 
+			{ lat: 0, lng: 0 }
+		}
 		defaultOptions={{
+			disableDefaultUI: true,
 			styles: mapStyle,
-			fullscreenControl: false,
-			fullscreenControlOptions: false,
-			mapTypeControl: false,
-			mapTypeControlOptions: false,
 		}}
 	>
 		<Marker
@@ -59,4 +66,11 @@ const Map = compose(
 	</GoogleMap>
 );
 
-export default MapComponent;
+const mapStateToProps = state => {
+	return {
+		user: state.auths.user,
+		isLoaded: state.auths.isLoaded,
+	};
+};
+
+export default connect(mapStateToProps, null)(MapComponent);

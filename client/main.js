@@ -5,23 +5,23 @@ import { Tracker } from "meteor/tracker";
 
 // Redux
 import { Provider } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 import appReducer from "../imports/ui/reducers";
+import { loadUser } from "../imports/ui/actions/auth";
 
 import App from "../imports/ui/App";
 
-const store = createStore(
-	appReducer,
-	applyMiddleware(thunk),
-	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(appReducer, composeEnhancers(applyMiddleware(thunk)));
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		Meteor.subscribe("userData");
-		// redux get location?
 	});
 
+	store.dispatch(loadUser());
+	
 	render(
 		<Provider store={store}>
 			<App />

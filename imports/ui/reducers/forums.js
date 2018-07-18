@@ -5,15 +5,14 @@ const initialState = {
 function forums(state = initialState, action) {
 	switch (action.type) {
 
-	case "TOGGLE_FORUM": {
+	case "TOGGLE_FORUM":
 		return {
 			...state,
 			forumHidden: !state.forumHidden
 		};
-	}
-	default: {
+
+	default: 
 		return state;
-	}
 
 	}
 }
