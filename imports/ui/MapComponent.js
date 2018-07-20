@@ -45,7 +45,7 @@ const Map = compose(
 		ref={props.onMapMounted}
 		onClick={props.onClicked}
 		zoom={2}
-		center={props.isLoaded && props.user.surphaze.location != null
+		center={props.isLoaded && props.user.surphaze && props.user.surphaze.location != null
 			? 
 			{
 				lat: props.user.surphaze.location.lat,
