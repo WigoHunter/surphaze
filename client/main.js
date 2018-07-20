@@ -18,6 +18,7 @@ const store = createStore(appReducer, composeEnhancers(applyMiddleware(thunk)));
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		Meteor.subscribe("userData");
+		Meteor.subscribe("users");
 	});
 
 	store.dispatch(loadUser());

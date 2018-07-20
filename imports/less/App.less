@@ -185,7 +185,6 @@ button {
             font-size: 14px;
             color: #FFF;
             border: none;
-            box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.6);
             padding: 3px 5px;
             border-radius: 3px;
             cursor: pointer;
@@ -196,7 +195,7 @@ button {
             }
 
             &:nth-child(2) {
-                background-color: rgb(255, 217, 2);
+                background-color: #F6575E;
                 margin-left: 10px;
             }
         }
@@ -229,7 +228,7 @@ button {
 .getting-location {
     color: #FFF;
 
-    & button {
+    & button.start {
         background-color: @lightBlue;
         text-transform: uppercase;
         border: 1px solid @primary;
@@ -244,5 +243,9 @@ button {
             background-color: @yellow;
             border-color: @yellow;
         }
+    }
+
+    & .Toastify__close-button.Toastify__close-button--success {
+        display: none !important;
     }
 }

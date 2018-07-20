@@ -1,21 +1,100 @@
 import React from "react";
-// import PropTypes from "prop-types";
+import { Meteor } from "meteor/meteor";
+import PropTypes from "prop-types";
 import { compose, withProps, withHandlers } from "recompose";
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import mapStyle from "../../map.json";
 import { keys } from "../../keys.json";
+import { toast } from "react-toastify";
+import { withRouter } from "react-router-dom";
 
+import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import authActionCreators from "./actions/auth";
+import uiActionCreators from "./actions/ui";
 
 class MapComponent extends React.Component {
-	constructor(props) {
-		super(props);
+	static propTypes = {
+		confirmingLocation: PropTypes.bool,
+		uiActions: PropTypes.object,
+		authActions: PropTypes.object,
+		user: PropTypes.object,
+		history: PropTypes.object,
 	}
 
+	constructor(props) {
+		super(props);
+
+		this.setUserLocation = this.setUserLocation.bind(this);
+		this.confirmLocation = this.confirmLocation.bind(this);
+	}
+
+	setUserLocation() {
+		if (Meteor.userId()) {
+			this.props.uiActions.endConfirmingLocation();
+			this.props.authActions.doneLocation();
+
+			Meteor.call("user.setLocation", this.props.user.surphaze.location);
+		} else {
+			alert("Wait... Seems you are not logged in yet!");
+			this.props.history.push("/");
+		}
+	}
+
+	confirmLocation() {
+		// If User is not in the confirming stage
+		if (!this.props.confirmingLocation) {
+			toast.success(() =>
+				<div className="toast-for-location">
+					Confirm your location?
+					<p>Can adjust anytime later!</p>
+					<div>
+						<button onClick={() => this.setUserLocation()}>Yep!</button>
+						<button onClick={() => this.props.uiActions.endConfirmingLocation()}>Let me adjust now.</button>
+					</div>
+				</div>,
+			{
+				autoClose: false,
+				position: "top-left",
+				closeButton: <span></span>
+			}
+			);
+		}
+
+		// Turn to confirming stage
+		this.props.uiActions.toggleConfirmingLocation();
+	}
+
+
 	render() {
-		return <Map {...this.props} />;
+		return <Map
+			{...this.props}
+			confirmLocation={this.confirmLocation}
+		/>;
 	}
 }
+
+const getLocation = props => 
+	(props.isLoaded && props.user.surphaze && props.user.surphaze.location != null)
+		? 
+		{
+			lat: props.user.surphaze.location.lat,
+			lng: props.user.surphaze.location.lng,
+		}
+		: 
+		{ lat: 0, lng: 0 };
+
+const getProfilePic = user =>
+	user && user.services.facebook
+		? `https://res.cloudinary.com/outwerspace/image/facebook/w_50,h_50,r_max/${user.services.facebook.id}.png`
+		: "";
+
+const getZoom = props =>
+	props.initLocation
+		? props.user && props.user.surphaze && props.user.surphaze.location
+			? 15
+			: props.confirmingLocation ? 15 : 2
+		: 2;
 
 const Map = compose(
 	withProps({
@@ -34,7 +113,15 @@ const Map = compose(
 				refs.map = ref;
 			},
 			onClicked: () => (e) => {
-				console.log(e);	//eslint-disable-line
+				if (refs.map.props.initLocation) {
+					let loc = {
+						lat: e.latLng.lat(),
+						lng: e.latLng.lng(),
+					};
+
+					refs.map.props.setUserLocation(loc);
+					refs.map.props.confirmLocation();
+				}
 			}
 		};
 	}),
@@ -44,25 +131,37 @@ const Map = compose(
 	<GoogleMap
 		ref={props.onMapMounted}
 		onClick={props.onClicked}
-		zoom={2}
-		center={props.isLoaded && props.user.surphaze && props.user.surphaze.location != null
-			? 
-			{
-				lat: props.user.surphaze.location.lat,
-				lng: props.user.surphaze.location.lng,
-			}
-			: 
-			{ lat: 0, lng: 0 }
-		}
+		zoom={getZoom(props)}
+		center={getLocation(props)}
+		confirmingLocation={props.confirmingLocation}
+		confirmLocation={props.confirmLocation}
+		initLocation={props.initLocation}
+		setUserLocation={props.authActions.setUserLocation}
 		defaultOptions={{
 			disableDefaultUI: true,
 			styles: mapStyle,
 		}}
 	>
-		<Marker
-			position={{ lat: 0, lng: 0}}
-			onClick={() => {}}
-		/>
+		{props.initLocation
+			?
+			<Marker
+				position={getLocation(props)}
+				onClick={() => {}}
+				defaultIcon={{ url: getProfilePic(props.user) }}
+			/>
+			:
+			Meteor.users.find().fetch().map(user =>
+				user.surphaze && user.surphaze.location != null &&
+					<Marker
+						key={user._id}
+						position={{
+							lat: user.surphaze.location.lat,
+							lng: user.surphaze.location.lng,
+						}}
+						defaultIcon={{ url: getProfilePic(user) }}
+					/>
+			)
+		}
 	</GoogleMap>
 );
 
@@ -70,7 +169,16 @@ const mapStateToProps = state => {
 	return {
 		user: state.auths.user,
 		isLoaded: state.auths.isLoaded,
+		initLocation: state.auths.initLocation,
+		confirmingLocation: state.ui.confirmingLocation,
 	};
 };
 
-export default connect(mapStateToProps, null)(MapComponent);
+const mapDispatchToProps = dispatch => {
+	return {
+		authActions: bindActionCreators(authActionCreators, dispatch),
+		uiActions: bindActionCreators(uiActionCreators, dispatch),
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MapComponent));

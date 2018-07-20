@@ -28,15 +28,6 @@ class Forum extends React.Component {
 		if (Meteor.userId()) {
 			this.props.forumActions.toggleForum();
 		}
-
-		/*
-		else if (!toast.isActive(this.toastId)) {
-			this.toastId = toast.warn("Please Login First :)", {
-				position: "top-left",
-				draggable: false,
-			});
-		}
-		*/
 	}
 
 	render() {
@@ -49,7 +40,7 @@ class Forum extends React.Component {
 						<p className="close" onClick={() => this.toggleForum()}>＋</p>
 					</div>
 					<div className="bot">
-						{!this.props.loggingIn && Meteor.user() &&
+						{!this.props.loggingIn && Meteor.user() && Meteor.user().services &&
 							<Link to="/profile"><div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div></Link>
 						}
 						<Link to="/"><img className="small-logo" src="/small-logo.svg" alt="logo" /></Link>

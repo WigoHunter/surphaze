@@ -11,4 +11,15 @@ if (Meteor.isServer) {
 			}
 		});
 	});
+
+	Meteor.publish("users", function() {
+		return Meteor.users.find({}, {
+			fields: {
+				_id: 1,
+				emails: 1,
+				services: 1,
+				surphaze: 1,
+			}
+		});
+	});
 }

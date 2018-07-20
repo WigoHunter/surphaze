@@ -14,3 +14,22 @@ export function loadUser() {
 		});
 	};
 }
+
+export function initLocation() {
+	return {
+		type: "INIT_LOCATION"
+	};
+}
+
+export function doneLocation() {
+	return {
+		type: "DONE_LOCATION"
+	};
+}
+
+export function setUserLocation(data) {
+	return {
+		type: "SET_LOCATION",
+		data
+	};
+}
