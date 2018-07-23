@@ -3,7 +3,6 @@ import { Meteor } from "meteor/meteor";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withTracker } from "meteor/react-meteor-data";
-import { toast } from "react-toastify";
 
 import UserNotFound from "./UserNotFound";
 
