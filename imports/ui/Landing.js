@@ -133,7 +133,7 @@ class Landing extends React.Component {
 
 	render() {
 		if (Meteor.user()) {
-			if (Meteor.user().surphaze.location == null) {
+			if (Meteor.user().surphaze && Meteor.user().surphaze.location == null) {
 				return (
 					<div className="getting-location">
 						<ToastContainer />
@@ -144,7 +144,11 @@ class Landing extends React.Component {
 				);
 			} else {
 				return (
-					<div>{/* RENDER REAL FORUM; USER HAS BOTH ACCOUNT AND LOCATION */}</div>
+					<div className="welcome">
+						<img className="logo" src="/icon.svg" alt="logo" />
+						<p>Surface a VC / Developer / Designer nearby!</p>
+						<button className="start" onClick={() => this.props.forumActions.toggleForum()}>START BROWSING</button>
+					</div>
 				);
 			}
 		}

@@ -12,12 +12,14 @@ import forumActionCreators from "./actions/forum-actions";
 // Pages
 import Profile from "./Profile";
 import Landing from "./Landing";
+import NoFound from "./NoFound";
 
 class Forum extends React.Component {
 	static propTypes = {
 		loggingIn: PropTypes.bool,
 		forumHidden: PropTypes.bool,
-		forumActions: PropTypes.object
+		forumActions: PropTypes.object,
+		showingOthersProfile: PropTypes.bool,
 	};
 
 	constructor(props) {
@@ -31,10 +33,10 @@ class Forum extends React.Component {
 	}
 
 	render() {
-		const { forumHidden } = this.props;
+		const { forumHidden, showingOthersProfile } = this.props;
 
 		return (
-			<div className={`forum ${forumHidden && "hide"}`}>
+			<div className={`forum ${forumHidden && "hide"} ${showingOthersProfile && "others-profile"}`}>
 				<div className="tools">
 					<div className="top">
 						<p className="close" onClick={() => this.toggleForum()}>＋</p>
@@ -54,7 +56,9 @@ class Forum extends React.Component {
 						:
 						<Switch>
 							<Route exact path="/" component={Landing} />
-							<Route path="/profile" component={Profile} />
+							<Route exact path="/profile" component={Profile} />
+							<Route path="/:id" component={Profile} />
+							<Route component={NoFound} />
 						</Switch>
 				}
 			</div>
@@ -64,7 +68,8 @@ class Forum extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		forumHidden: state.forums.forumHidden
+		forumHidden: state.forums.forumHidden,
+		showingOthersProfile: state.forums.showingOthersProfile,
 	};
 };
 

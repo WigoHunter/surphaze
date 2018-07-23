@@ -1,5 +1,6 @@
 const initialState = {
-	forumHidden: false
+	forumHidden: false,
+	showingOthersProfile: false,
 };
 
 function forums(state = initialState, action) {
@@ -9,6 +10,24 @@ function forums(state = initialState, action) {
 		return {
 			...state,
 			forumHidden: !state.forumHidden
+		};
+
+	case "OPEN_FORUM":
+		return {
+			...state,
+			forumHidden: false,
+		};
+
+	case "SHOWING_OTHERS_PROFILE":
+		return {
+			...state,
+			showingOthersProfile: true,
+		};
+
+	case "CLOSING_OTHERS_PROFILE":
+		return {
+			...state,
+			showingOthersProfile: false,
 		};
 
 	default: 

@@ -146,13 +146,13 @@ const Map = compose(
 			?
 			<Marker
 				position={getLocation(props)}
-				onClick={() => {}}
 				defaultIcon={{ url: getProfilePic(props.user) }}
 			/>
 			:
 			Meteor.users.find().fetch().map(user =>
 				user.surphaze && user.surphaze.location != null &&
 					<Marker
+						onClick={() => props.history.push(`/${user._id}`)}
 						key={user._id}
 						position={{
 							lat: user.surphaze.location.lat,

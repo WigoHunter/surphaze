@@ -58,6 +58,18 @@
         }
     }
 
+    &.others-profile {
+        width: 45vw;
+
+        &.hide {
+            right: calc(~"50px - 45vw");
+
+            & .tools .top .close {
+                transform: rotate(0);
+            }
+        }
+    }
+
     & .spinner {
         width: 125px;
     }
@@ -228,24 +240,24 @@ button {
 .getting-location {
     color: #FFF;
 
-    & button.start {
-        background-color: @lightBlue;
-        text-transform: uppercase;
-        border: 1px solid @primary;
-        padding: 10px 15px;
-        border-radius: 100px;
-        margin: 10px 0 0;
-        outline: 0;
-        transition: all 0.3s ease;
-
-        &:hover {
-            transform: scale(1.1);
-            background-color: @yellow;
-            border-color: @yellow;
-        }
-    }
-
     & .Toastify__close-button.Toastify__close-button--success {
         display: none !important;
+    }
+}
+
+button.start {
+    background-color: @lightBlue;
+    text-transform: uppercase;
+    border: 1px solid @primary;
+    padding: 10px 15px;
+    border-radius: 100px;
+    margin: 10px 0 0;
+    outline: 0;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        background-color: @yellow;
+        border-color: @yellow;
     }
 }
