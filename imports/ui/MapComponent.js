@@ -169,7 +169,7 @@ const Map = compose(
 						onClick={() => props.onMarkerClick({
 							lat: user.surphaze.location.lat,
 							lng: user.surphaze.location.lng,
-						}, user._id)}
+						}, user.username)}
 						defaultIcon={{ url: getProfilePic(user) }}
 					/>
 			)
