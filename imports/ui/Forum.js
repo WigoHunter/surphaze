@@ -27,9 +27,7 @@ class Forum extends React.Component {
 	}
 
 	toggleForum() {
-		if (Meteor.userId()) {
-			this.props.forumActions.toggleForum();
-		}
+		this.props.forumActions.toggleForum();
 	}
 
 	render() {

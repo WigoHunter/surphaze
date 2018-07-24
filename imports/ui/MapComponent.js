@@ -12,12 +12,14 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import authActionCreators from "./actions/auth";
 import uiActionCreators from "./actions/ui";
+import forumActionCreators from "./actions/forum-actions";
 
 class MapComponent extends React.Component {
 	static propTypes = {
 		confirmingLocation: PropTypes.bool,
 		uiActions: PropTypes.object,
 		authActions: PropTypes.object,
+		forumActions: PropTypes.object,
 		user: PropTypes.object,
 		history: PropTypes.object,
 	}
@@ -122,7 +124,12 @@ const Map = compose(
 					refs.map.props.setUserLocation(loc);
 					refs.map.props.confirmLocation();
 				}
-			}
+			},
+			onMarkerClick: () => (data, id) => {
+				refs.map.panTo(data);
+				refs.map.props.history.push(`/${id}`);
+				refs.map.props.forumActions.openForum();
+			},
 		};
 	}),
 	withScriptjs,
@@ -136,6 +143,8 @@ const Map = compose(
 		confirmingLocation={props.confirmingLocation}
 		confirmLocation={props.confirmLocation}
 		initLocation={props.initLocation}
+		history={props.history}
+		forumActions={props.forumActions}
 		setUserLocation={props.authActions.setUserLocation}
 		defaultOptions={{
 			disableDefaultUI: true,
@@ -152,12 +161,15 @@ const Map = compose(
 			Meteor.users.find().fetch().map(user =>
 				user.surphaze && user.surphaze.location != null &&
 					<Marker
-						onClick={() => props.history.push(`/${user._id}`)}
 						key={user._id}
 						position={{
 							lat: user.surphaze.location.lat,
 							lng: user.surphaze.location.lng,
 						}}
+						onClick={() => props.onMarkerClick({
+							lat: user.surphaze.location.lat,
+							lng: user.surphaze.location.lng,
+						}, user._id)}
 						defaultIcon={{ url: getProfilePic(user) }}
 					/>
 			)
@@ -178,6 +190,7 @@ const mapDispatchToProps = dispatch => {
 	return {
 		authActions: bindActionCreators(authActionCreators, dispatch),
 		uiActions: bindActionCreators(uiActionCreators, dispatch),
+		forumActions: bindActionCreators(forumActionCreators, dispatch),
 	};
 };
 

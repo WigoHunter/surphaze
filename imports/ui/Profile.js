@@ -32,13 +32,16 @@ class Profile extends React.Component {
 		console.log("mounting", this.props); // eslint-disable-line
 	}
 
-	componentDidUpdate() {
-		this.getUserSetup();
+	componentDidUpdate(/*prevProps*/) {
+		/*
+		if (prevProps.user && this.props.user._id && prevProps.user._id != this.props.user._id) {
+			this.getUserSetup();
+		}
+		*/
 		console.log("updating", this.props); // eslint-disable-line
 	}
 
 	getUserSetup() {
-		// TO FIX: Seems to override toggle forum
 		this.props.forumActions.openForum();
 	}
 
@@ -47,14 +50,14 @@ class Profile extends React.Component {
 			return null;
 		}
 
-		if (!this.props.user) {
+		if (!this.props.user._id) {
 			return (
 				<UserNotFound />
 			);
 		}
 
 		return (
-			<div className="profile" onClick={() => this.props.history.push("/hi")}>{this.props.user._id}</div>
+			<div className="profile" onClick={() => this.props.history.push("/hi")}>{this.props.user.username}</div>
 		);
 	}
 }
@@ -78,7 +81,12 @@ const ProfileContainer = withTracker((props) => {
 
 		return {
 			loading: !sub.ready(),
-			user: Meteor.users.findOne({ _id: props.match.params.id }),
+			user: Meteor.users.findOne({
+				$or: [
+					{_id: props.match.params.id},
+					{username: props.match.params.id}
+				]
+			}) || {},
 		};
 	}
 
