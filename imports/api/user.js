@@ -9,5 +9,15 @@ Meteor.methods({
 				"surphaze.location": data
 			}
 		});
+	},
+
+	"user.update.github"(data) {
+		Meteor.users.update({
+			_id: Meteor.userId()
+		}, {
+			$set: {
+				"services.github.addon": data
+			}
+		});
 	}
 });

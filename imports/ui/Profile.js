@@ -3,6 +3,7 @@ import { Meteor } from "meteor/meteor";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withTracker } from "meteor/react-meteor-data";
+import "whatwg-fetch";
 
 import UserNotFound from "./UserNotFound";
 
@@ -28,21 +29,35 @@ class Profile extends React.Component {
 	}
 
 	componentDidMount() {
+		if (!this.props.loading && (!this.props.user._id || this.props.user.surphaze.location == null)) {
+			this.props.history.push("/");
+		}
 		this.getUserSetup();
 		console.log("mounting", this.props); // eslint-disable-line
 	}
 
-	componentDidUpdate(/*prevProps*/) {
-		/*
-		if (prevProps.user && this.props.user._id && prevProps.user._id != this.props.user._id) {
-			this.getUserSetup();
-		}
-		*/
-		console.log("updating", this.props); // eslint-disable-line
-	}
-
 	getUserSetup() {
 		this.props.forumActions.openForum();
+	}
+
+	linkWithGitHub() {
+		Meteor.linkWithGithub({
+			requestPermissions: ["user", "public_repo"]
+		}, () => {
+			if (Meteor.user().services.github) {
+				fetch(`https://api.github.com/users/${Meteor.user().services.github.username}`)
+					.then(res => res.json())
+					.then(json => {
+						Meteor.call("user.update.github", {
+							company: json.company,
+							website: json.blog,
+							bio: json.bio,
+							repos_url: json.repos_url,
+						});
+					});
+			}
+			
+		});
 	}
 
 	render() {
@@ -57,7 +72,12 @@ class Profile extends React.Component {
 		}
 
 		return (
-			<div className="profile" onClick={() => this.props.history.push("/hi")}>{this.props.user.username}</div>
+			<div className="profile">
+				<h2 onClick={() => this.props.history.push("/hi")}>{this.props.user.username}</h2>
+				<button className="github" onClick={() => this.linkWithGitHub()}>
+					<i className="fa fa-github" /> GitHub
+				</button>
+			</div>
 		);
 	}
 }
@@ -83,8 +103,8 @@ const ProfileContainer = withTracker((props) => {
 			loading: !sub.ready(),
 			user: Meteor.users.findOne({
 				$or: [
-					{_id: props.match.params.id},
-					{username: props.match.params.id}
+					{ _id: props.match.params.id },
+					{ username: props.match.params.id }
 				]
 			}) || {},
 		};
@@ -92,7 +112,7 @@ const ProfileContainer = withTracker((props) => {
 
 	props.forumActions.closingOthersProfile();
 	return {
-		user: Meteor.user()
+		user: Meteor.user() || {}
 	};
 })(Profile);
 

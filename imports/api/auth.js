@@ -12,6 +12,16 @@ ServiceConfiguration.configurations.insert({
 	secret: keys.facebook.secret
 });
 
+ServiceConfiguration.configurations.remove({
+	service: "github"
+});
+
+ServiceConfiguration.configurations.insert({
+	service: "github",
+	clientId: keys.github.clientId,
+	secret: keys.github.secret,
+});
+
 Accounts.onCreateUser(function (options, user) {
 	if (!user.services.facebook) {
 		return user;

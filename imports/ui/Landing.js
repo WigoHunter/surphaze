@@ -39,6 +39,7 @@ class Landing extends React.Component {
 		if (Meteor.userId()) {
 			this.props.uiActions.endConfirmingLocation();
 			this.props.authActions.doneLocation();
+			this.props.forumActions.openForum();
 
 			Meteor.call("user.setLocation", this.props.user.surphaze.location);
 		} else {

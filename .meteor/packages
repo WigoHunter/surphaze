@@ -22,3 +22,7 @@ accounts-facebook
 service-configuration
 accounts-base
 react-meteor-data
+bozhao:link-accounts
+accounts-twitter
+accounts-github
+fortawesome:fontawesome
