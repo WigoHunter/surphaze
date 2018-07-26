@@ -22,6 +22,16 @@ ServiceConfiguration.configurations.insert({
 	secret: keys.github.secret,
 });
 
+ServiceConfiguration.configurations.remove({
+	service: "linkedin"
+});
+
+ServiceConfiguration.configurations.insert({
+	service: "linkedin",
+	clientId: keys.linkedin.clientId,
+	secret: keys.linkedin.secret,
+});
+
 Accounts.onCreateUser(function (options, user) {
 	if (!user.services.facebook) {
 		return user;

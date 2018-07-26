@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withTracker } from "meteor/react-meteor-data";
 import "whatwg-fetch";
+import fetchJsonp from "fetch-jsonp";
 
 import UserNotFound from "./UserNotFound";
 
@@ -40,6 +41,24 @@ class Profile extends React.Component {
 		this.props.forumActions.openForum();
 	}
 
+	linkWithLinkedIn() {
+		Meteor.linkWithLinkedIn({
+			requestPermissions: ["r_basicprofile"]
+		}, () => {
+			if (Meteor.user().services.linkedin) {
+				fetchJsonp(`https://api.linkedin.com/v1/people/~:(headline,summary,positions)?oauth2_access_token=${Meteor.user().services.linkedin.accessToken}&format=jsonp`)
+					.then(res => res.json())
+					.then(json => {
+						Meteor.call("user.update.linkedin", {
+							headline: json.headline,
+							positions: json.positions,
+							summary: json.summary
+						});
+					});
+			}
+		});
+	}
+
 	linkWithGitHub() {
 		Meteor.linkWithGithub({
 			requestPermissions: ["user", "public_repo"]
@@ -73,9 +92,12 @@ class Profile extends React.Component {
 
 		return (
 			<div className="profile">
-				<h2 onClick={() => this.props.history.push("/hi")}>{this.props.user.username}</h2>
+				<h2 onClick={() => this.props.history.push("/hi") }>{this.props.user.username}</h2>
 				<button className="github" onClick={() => this.linkWithGitHub()}>
-					<i className="fa fa-github" /> GitHub
+					<i className="fa fa-github" />
+				</button>
+				<button className="linkedin" onClick={() => this.linkWithLinkedIn()}>
+					<i className="fa fa-linkedin" />
 				</button>
 			</div>
 		);

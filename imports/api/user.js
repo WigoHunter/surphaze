@@ -19,5 +19,15 @@ Meteor.methods({
 				"services.github.addon": data
 			}
 		});
+	},
+
+	"user.update.linkedin"(data) {
+		Meteor.users.update({
+			_id: Meteor.userId()
+		}, {
+			$set: {
+				"services.linkedin.addon": data
+			}
+		});
 	}
 });
