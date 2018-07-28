@@ -1,12 +1,13 @@
 import React from "react";
 import { Meteor } from "meteor/meteor";
 import PropTypes from "prop-types";
-import { compose, withProps, withHandlers } from "recompose";
+import { compose, withProps, withHandlers, withState } from "recompose";
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import mapStyle from "../../map.json";
 import { keys } from "../../keys.json";
 import { toast } from "react-toastify";
 import { withRouter } from "react-router-dom";
+import { MarkerClusterer } from "react-google-maps/lib/components/addons/MarkerClusterer";
 
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -106,14 +107,19 @@ const Map = compose(
 		containerElement: <div style={{ height: "100vh" }} />,
 		mapElement: <div style={{ height: "100%" }} />,	
 	}),
+	withState("zoom", "onZoomChange", 2),
 	withHandlers(() => {
 		const refs = {
 			map: undefined,
 		};
 
 		return {
-			onMapMounted: () => ref => {
+			onMapMounted: ({ onZoomChange }) => ref => {
 				refs.map = ref;
+				onZoomChange(getZoom(ref.props));
+			},
+			onZoomChanged: ({ onZoomChange }) => () => {
+				onZoomChange(refs.map.getZoom());
 			},
 			onClicked: () => (e) => {
 				if (refs.map.props.initLocation) {
@@ -126,8 +132,9 @@ const Map = compose(
 					refs.map.props.confirmLocation();
 				}
 			},
-			onMarkerClick: () => (data, id) => {
+			onMarkerClick: ({ onZoomChange }) => (data, id) => {
 				refs.map.panTo(data);
+				onZoomChange(13);
 				refs.map.props.history.push(`/${id}`);
 				refs.map.props.forumActions.openForum();
 			},
@@ -139,7 +146,8 @@ const Map = compose(
 	<GoogleMap
 		ref={props.onMapMounted}
 		onClick={props.onClicked}
-		zoom={getZoom(props)}
+		zoom={props.zoom}
+		onZoomChanged={props.onZoomChanged}
 		center={getLocation(props)}
 		confirmingLocation={props.confirmingLocation}
 		confirmLocation={props.confirmLocation}
@@ -152,29 +160,37 @@ const Map = compose(
 			styles: mapStyle,
 		}}
 	>
-		{props.initLocation
-			?
-			<Marker
-				position={getLocation(props)}
-				defaultIcon={{ url: getProfilePic(props.user) }}
-			/>
-			:
-			Meteor.users.find().fetch().map(user =>
-				user.surphaze && user.surphaze.location != null &&
-					<Marker
-						key={user._id}
-						position={{
-							lat: user.surphaze.location.lat,
-							lng: user.surphaze.location.lng,
-						}}
-						onClick={() => props.onMarkerClick({
-							lat: user.surphaze.location.lat,
-							lng: user.surphaze.location.lng,
-						}, user.username)}
-						defaultIcon={{ url: getProfilePic(user) }}
-					/>
-			)
-		}
+		<MarkerClusterer
+			onClick={props.onMarkerClusterClick}
+			defaultZoomOnClick
+			averageCenter
+			enableRetinaIcons
+			gridSize={60}
+		>
+			{props.initLocation
+				?
+				<Marker
+					position={getLocation(props)}
+					defaultIcon={{ url: getProfilePic(props.user) }}
+				/>
+				:
+				Meteor.users.find().fetch().map(user =>
+					user.surphaze && user.surphaze.location != null &&
+						<Marker
+							key={user._id}
+							position={{
+								lat: user.surphaze.location.lat,
+								lng: user.surphaze.location.lng,
+							}}
+							onClick={() => props.onMarkerClick({
+								lat: user.surphaze.location.lat,
+								lng: user.surphaze.location.lng,
+							}, user.username)}
+							defaultIcon={{ url: getProfilePic(user) }}
+						/>
+				)
+			}
+		</MarkerClusterer>
 	</GoogleMap>
 );
 

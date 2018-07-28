@@ -10,6 +10,12 @@ export function openForum() {
 	};
 }
 
+export function closeForum() {
+	return {
+		type: "CLOSE_FORUM"
+	};
+}
+
 export function showingOthersProfile() {
 	return {
 		type: "SHOWING_OTHERS_PROFILE"

@@ -8,9 +8,12 @@ if (Meteor.isServer) {
 				emails: 1,
 				services: 1,
 				surphaze: 1,
+				username: 1,
 			}
 		});
 	});
+
+	// NEED ANOTHER PUBLISHMENT FOR UNLOGGED IN USERS
 
 	Meteor.publish("users", function() {
 		return Meteor.users.find({}, {
@@ -19,6 +22,7 @@ if (Meteor.isServer) {
 				emails: 1,
 				services: 1,
 				surphaze: 1,
+				username: 1,
 			}
 		});
 	});

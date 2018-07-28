@@ -27,6 +27,10 @@ class Landing extends React.Component {
 		super(props);
 	}
 
+	componentDidMount() {
+		
+	}
+
 	login() {
 		Meteor.loginWithFacebook({requestPermissions: ["public_profile", "email"]}, (err) => {
 			if (err) {

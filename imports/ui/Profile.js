@@ -1,6 +1,6 @@
 import React from "react";
 import { Meteor } from "meteor/meteor";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withTracker } from "meteor/react-meteor-data";
 import "whatwg-fetch";
@@ -19,6 +19,7 @@ class Profile extends React.Component {
 		loading: PropTypes.bool,
 		user: PropTypes.object,
 		forumActions: PropTypes.object,
+		showingOthersProfile: PropTypes.bool,
 	}
 
 	constructor(props) {
@@ -92,21 +93,40 @@ class Profile extends React.Component {
 
 		return (
 			<div className="profile">
-				<h2 onClick={() => this.props.history.push("/hi") }>{this.props.user.username}</h2>
-				<button className="github" onClick={() => this.linkWithGitHub()}>
-					<i className="fa fa-github" />
-				</button>
-				<button className="linkedin" onClick={() => this.linkWithLinkedIn()}>
-					<i className="fa fa-linkedin" />
-				</button>
+				<div className="bg" style={{ background: `url(${"/background.png"})`, backgroundSize: "cover" }}></div>
+				
+				<div className="me">
+					<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${this.props.user.services.facebook.id}.png)` }}></div>
+					<h2>{this.props.user.username}</h2>
+					<Link to={`/${this.props.user.username}`}>@{this.props.user.username}</Link>
+				</div>
+				<p className="count">{this.props.user.surphaze.connections.length} Connections</p>
+				
+				<div className="buttons">
+					<button>CONNECT</button>
+					<button>CHAT</button>
+				</div>
+				
+				<p className="short-bio">{this.props.user.services.github.addon.bio}</p>
+				
+				{!this.props.showingOthersProfile &&
+					<button className="github" onClick={() => this.linkWithGitHub()}>
+						<i className="fa fa-github" />
+					</button>
+				}
+				{!this.props.showingOthersProfile &&
+					<button className="linkedin" onClick={() => this.linkWithLinkedIn()}>
+						<i className="fa fa-linkedin" />
+					</button>
+				}
 			</div>
 		);
 	}
 }
 
-const mapStateToProps = () => {
+const mapStateToProps = state => {
 	return {
-
+		showingOthersProfile: state.forums.showingOthersProfile,
 	};
 };
 

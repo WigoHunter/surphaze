@@ -39,7 +39,9 @@ Accounts.onCreateUser(function (options, user) {
 	user.username = user.services.facebook.name;
 	user.emails = [{address: user.services.facebook.email}];
 	user.surphaze = {
-		location: null
+		location: null,
+		connections: [],
+		await_invitation: [],
 	};
 
 	return user;

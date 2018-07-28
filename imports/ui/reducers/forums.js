@@ -18,6 +18,12 @@ function forums(state = initialState, action) {
 			forumHidden: false,
 		};
 
+	case "CLOSE_FORUM":
+		return {
+			...state,
+			forumHidden: true,
+		};
+
 	case "SHOWING_OTHERS_PROFILE":
 		return {
 			...state,

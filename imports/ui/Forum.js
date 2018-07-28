@@ -2,6 +2,7 @@ import React from "react";
 import { Meteor } from "meteor/meteor";
 import { Route, Link, Switch } from "react-router-dom";
 import { withTracker } from "meteor/react-meteor-data";
+import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 
 // Redux
@@ -20,10 +21,19 @@ class Forum extends React.Component {
 		forumHidden: PropTypes.bool,
 		forumActions: PropTypes.object,
 		showingOthersProfile: PropTypes.bool,
+		history: PropTypes.object,
 	};
 
 	constructor(props) {
 		super(props);
+	}
+
+	componentDidMount() {
+		setTimeout(() => {
+			if (this.props.history.location.pathname == "/" && Meteor.user() && Meteor.user().surphaze && Meteor.user().surphaze.location != null) {
+				this.props.forumActions.closeForum();
+			}
+		}, 1000);
 	}
 
 	toggleForum() {
@@ -41,9 +51,13 @@ class Forum extends React.Component {
 					</div>
 					<div className="bot">
 						{!this.props.loggingIn && Meteor.user() && Meteor.user().services &&
-							<Link to="/profile"><div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div></Link>
+							<Link to="/profile" onClick={() => this.props.forumActions.openForum()}>
+								<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div>
+							</Link>
 						}
-						<Link to="/"><img className="small-logo" src="/small-logo.svg" alt="logo" /></Link>
+						<Link to="/" onClick={() => this.props.forumActions.openForum()}>
+							<img className="small-logo" src="/small-logo.svg" alt="logo" />
+						</Link>
 					</div>
 				</div>
 
@@ -86,4 +100,4 @@ const ForumContainer = withTracker((props) => {
 	};
 })(Forum);
 
-export default connect(mapStateToProps, mapDispatchToProps)(ForumContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ForumContainer));
