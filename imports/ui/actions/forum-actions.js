@@ -16,6 +16,18 @@ export function closeForum() {
 	};
 }
 
+export function openGridMode() {
+	return {
+		type: "OPEN_GRID_MODE"
+	};
+}
+
+export function closeGridMode() {
+	return {
+		type: "CLOSE_GRID_MODE"
+	};
+}
+
 export function showingOthersProfile() {
 	return {
 		type: "SHOWING_OTHERS_PROFILE"

@@ -15,6 +15,17 @@ if (Meteor.isServer) {
 
 	// NEED ANOTHER PUBLISHMENT FOR UNLOGGED IN USERS
 
+	Meteor.publish("unauth_users", function() {
+		return Meteor.users.find({}, {
+			fields: {
+				_id: 1,
+				surphaze: 1,
+				services: 1,
+				username: 1,
+			}
+		});
+	});
+
 	Meteor.publish("users", function() {
 		return Meteor.users.find({}, {
 			fields: {

@@ -3,6 +3,7 @@
 @lightBlue: #3FD1CB;
 @yellow: #f9e75e;
 @paddingRight: 80px - 60vw;
+@pink: #F6575E;
 
 .app {
     height: 100vh;
@@ -36,6 +37,11 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+
+    &.grid {
+        display: grid;
+        overflow-y: auto;
+    }
 
     & h2 {
         font-size: 28px;
@@ -99,34 +105,48 @@
                 z-index: 100;
             }
         }
+    }
+}
 
-        & .bot {
-            & a {
-                width: 30px;
-                height: 30px;
-                border: 2px solid rgba(255, 255, 255, 0.8);
-                border-radius: 50%;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 12px;
-                background: rgba(255, 255, 255, 0.4);
-            }
+& .toolkits {
+    position: fixed;
+    top: 40px;
+    left: 40px;
+    display: flex;
+    flex-direction: row;
+    background: @lightBlue;
+    z-index: 100;
+    opacity: 0.9;
+    padding: 9px 6px;
+    border-radius: 100px;
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.6);
+    transition: all 0.6s ease;
 
-            & .small-logo {
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-            }
+    & a {
+        width: 30px;
+        height: 30px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        position: relative;
+        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 7px;
+        background: rgba(255, 255, 255, 0.4);
+    }
 
-            & .user-pic {
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-                background-size: cover !important;
-            }
-        }
+    & .small-logo {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    & .user-pic {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-size: cover !important;
     }
 }
 
@@ -312,14 +332,15 @@ button {
 }
 
 .forum .profile {
-    width: calc(~"100% - 50px");
+    width: calc(~"100%");
     height: 100%;
     align-self: flex-end;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     border-radius: 10px;
+    overflow-y: scroll;
 
     & .bg {
         width: 100%;
@@ -363,7 +384,7 @@ button {
     & .count {
         margin-left: 40px;
         font-size: 12px;
-        margin-top: 16px;
+        margin-top: 0px;
         opacity: 0.6;
     }
 
@@ -401,4 +422,108 @@ button {
         }
     }
 
+    & .short-bio {
+        & span > span {
+            cursor: pointer;
+        }
+
+        & .close {
+            color: @pink;
+            font-size: 12px;
+        }
+    }
+
+    & .aka {
+        width: 100%;
+        padding: 0 40px;
+        box-sizing: border-box;
+        font-size: 14px;
+        margin-top: 12px;
+    }
+
+    & .socials-wrapper {
+        margin-top: 16px;
+        width: 100%;
+        padding: 0 40px;
+        position: relative;
+        box-sizing: border-box;
+
+        & h3 {
+            color: @lightBlue;
+        }
+
+        & .social-medias {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            width: 100%;
+            margin-top: 14px;
+
+            & .sm {
+                margin-right: 10px;
+                height: 30px;
+                width: 30px;
+                border-radius: 15px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid @lightBlue;
+                color: #333;
+                opacity: 0.7;
+                background-color: rgba(255, 255, 255, 0);
+                outline: 0;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                margin-bottom: 30px;
+
+                &:hover {
+                    transform: scale(1.1);
+                    background-color: @lightBlue;
+                    color: #FFF;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    & .topics-wrapper {
+        margin-top: 16px;
+        width: 100%;
+        padding: 0 40px;
+        position: relative;
+        box-sizing: border-box;
+
+        & h3 {
+            color: @lightBlue;
+        }
+
+        & .topics {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            width: 100%;
+            margin-top: 14px;
+
+            & .topic {
+                text-decoration: none;
+                color: #333;
+                background-color: rgba(255, 255, 255, 0);
+                font-weight: 400;
+                border: 1px solid @lightBlue;
+                padding: 8px 12px;
+                border-radius: 100px;
+                font-size: 14px;
+                outline: 0;
+                transition: all 0.3s ease;
+                margin-right: 10px;
+
+                &:hover {
+                    transform: scale(1.1);
+                    background-color: @lightBlue;
+                    color: #FFF;
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,7 @@
 const initialState = {
 	forumHidden: false,
 	showingOthersProfile: false,
+	gridMode: false
 };
 
 function forums(state = initialState, action) {
@@ -22,6 +23,18 @@ function forums(state = initialState, action) {
 		return {
 			...state,
 			forumHidden: true,
+		};
+
+	case "OPEN_GRID_MODE":
+		return {
+			...state,
+			gridMode: true,
+		};
+
+	case "CLOSE_GRID_MODE":
+		return {
+			...state,
+			gridMode: false,
 		};
 
 	case "SHOWING_OTHERS_PROFILE":

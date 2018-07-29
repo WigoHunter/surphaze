@@ -22,6 +22,7 @@ class Forum extends React.Component {
 		forumActions: PropTypes.object,
 		showingOthersProfile: PropTypes.bool,
 		history: PropTypes.object,
+		gridMode: PropTypes.bool,
 	};
 
 	constructor(props) {
@@ -41,23 +42,24 @@ class Forum extends React.Component {
 	}
 
 	render() {
-		const { forumHidden, showingOthersProfile } = this.props;
+		const { forumHidden, showingOthersProfile, gridMode } = this.props;
 
 		return (
-			<div className={`forum ${forumHidden && "hide"} ${showingOthersProfile && "others-profile"}`}>
+			<div className={`forum ${forumHidden && "hide"} ${showingOthersProfile && "others-profile"} ${gridMode && "grid"}`}>
+				<div className="toolkits">
+					<Link to="/" onClick={() => this.props.forumActions.openForum()}>
+						<img className="small-logo" src="/small-logo.svg" alt="logo" />
+					</Link>
+					{!this.props.loggingIn && Meteor.user() && Meteor.user().services &&
+						<Link to="/profile" onClick={() => this.props.forumActions.openForum()}>
+							<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div>
+						</Link>
+					}
+				</div>
+				
 				<div className="tools">
 					<div className="top">
 						<p className="close" onClick={() => this.toggleForum()}>＋</p>
-					</div>
-					<div className="bot">
-						{!this.props.loggingIn && Meteor.user() && Meteor.user().services &&
-							<Link to="/profile" onClick={() => this.props.forumActions.openForum()}>
-								<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${Meteor.user().services.facebook.id}.png)` }}></div>
-							</Link>
-						}
-						<Link to="/" onClick={() => this.props.forumActions.openForum()}>
-							<img className="small-logo" src="/small-logo.svg" alt="logo" />
-						</Link>
 					</div>
 				</div>
 
@@ -82,6 +84,7 @@ const mapStateToProps = state => {
 	return {
 		forumHidden: state.forums.forumHidden,
 		showingOthersProfile: state.forums.showingOthersProfile,
+		gridMode: state.forums.gridMode,
 	};
 };
 

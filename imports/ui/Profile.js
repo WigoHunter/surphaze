@@ -13,6 +13,53 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import forumActionCreators from "./actions/forum-actions";
 
+const getAKA = user => {
+	if (user.surphaze.profile.position.title.length > 0) {
+		return (
+			<span>
+				AKA {user.surphaze.profile.position.title}{user.surphaze.profile.position.company && ` @${user.surphaze.profile.position.company}`}
+			</span>
+		);
+	} else if (user.services.linkedin.addon.positions) {
+		return (
+			<span>
+				AKA {user.services.linkedin.addon.positions.values[0].title}{` @${user.services.linkedin.addon.positions.values[0].company.name}`}
+			</span>
+		);
+	}
+
+	return null;
+};
+
+const getBio = user =>
+	user.surphaze.profile.bio.length > 0
+		? user.surphaze.profile.bio
+		: user.services.github
+			? user.services.github.addon && user.services.github.addon.bio
+			: user.services.linkedin
+				? user.services.linkedin.addon && user.services.linkedin.addon.summary
+				: "";
+
+const processBio = (bio, shorten, toggle) => {
+	if (bio && bio.length > 300) {
+		if (shorten) {
+			return (
+				<span>
+					{bio.substr(0, 300)} <span onClick={() => toggle()}>...</span>
+				</span>
+			);
+		}
+
+		return (
+			<span>
+				{bio} <span className="close" onClick={() => toggle()}>(close)</span>
+			</span>
+		);
+	}
+
+	return bio;
+};
+
 class Profile extends React.Component {
 	static propTypes = {
 		history: PropTypes.object,
@@ -24,10 +71,19 @@ class Profile extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			shortenBio: true,
+			shortenInterest: true,
+		};
+
+		this.toggleBio = this.toggleBio.bind(this);
+		this.toggleInterest = this.toggleInterest.bind(this);
 	}
 
 	componentWillUnmount() {
 		this.props.forumActions.closingOthersProfile();
+		this.props.forumActions.closeGridMode();
 	}
 
 	componentDidMount() {
@@ -38,8 +94,24 @@ class Profile extends React.Component {
 		console.log("mounting", this.props); // eslint-disable-line
 	}
 
+	componentDidUpdate() {
+		this.props.forumActions.openGridMode();
+	}
+
 	getUserSetup() {
 		this.props.forumActions.openForum();
+	}
+
+	toggleBio() {
+		this.setState({
+			shortenBio: !this.state.shortenBio,
+		});
+	}
+
+	toggleInterest() {
+		this.setState({
+			shortenInterest: !this.state.shortenInterest,
+		});
 	}
 
 	linkWithLinkedIn() {
@@ -100,6 +172,7 @@ class Profile extends React.Component {
 					<h2>{this.props.user.username}</h2>
 					<Link to={`/${this.props.user.username}`}>@{this.props.user.username}</Link>
 				</div>
+				<p className="aka">{getAKA(this.props.user)}</p>
 				<p className="count">{this.props.user.surphaze.connections.length} Connections</p>
 				
 				<div className="buttons">
@@ -107,14 +180,49 @@ class Profile extends React.Component {
 					<button>CHAT</button>
 				</div>
 				
-				<p className="short-bio">{this.props.user.services.github.addon.bio}</p>
+				<p className="short-bio">{processBio(getBio(this.props.user), this.state.shortenBio, this.toggleBio)}</p>
 				
-				{!this.props.showingOthersProfile &&
+				{/* db.users.find({"surphaze.profile.interested": {$all: ["React"]}} */}
+				<div className="topics-wrapper">
+					<h3>#Interested Topics</h3>
+					<div className="topics">
+						{this.props.user.surphaze && this.props.user.surphaze.profile.interested.map((topic, i) => (
+							<Link key={i} className="topic" onClick={() => alert("You will be able to search by tags soon!")} to={`/tag/${topic}`}>{topic}</Link>
+						))}
+					</div>
+				</div>
+
+				<div className="socials-wrapper">
+					<h3>#Social Media</h3>
+					<div className="social-medias">
+						{this.props.user.surphaze && this.props.user.surphaze.profile.links.facebook &&
+							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-facebook" /></a>
+						}
+
+						{this.props.user.surphaze && this.props.user.surphaze.profile.links.twitter &&
+							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-twitter" /></a>
+						}
+
+						{this.props.user.surphaze && this.props.user.surphaze.profile.links.linkedin &&
+							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-linkedin" /></a>
+						}
+
+						{this.props.user.surphaze && this.props.user.surphaze.profile.links.github &&
+							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-github" /></a>
+						}
+
+						{this.props.user.surphaze && this.props.user.surphaze.profile.links.medium &&
+							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-medium" /></a>
+						}
+					</div>
+				</div>
+
+				{!this.props.showingOthersProfile && this.props.user.services.github == null &&
 					<button className="github" onClick={() => this.linkWithGitHub()}>
 						<i className="fa fa-github" />
 					</button>
 				}
-				{!this.props.showingOthersProfile &&
+				{!this.props.showingOthersProfile && this.props.user.services.linkedin == null &&
 					<button className="linkedin" onClick={() => this.linkWithLinkedIn()}>
 						<i className="fa fa-linkedin" />
 					</button>
