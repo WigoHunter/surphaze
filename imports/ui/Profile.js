@@ -175,10 +175,12 @@ class Profile extends React.Component {
 				<p className="aka">{getAKA(this.props.user)}</p>
 				<p className="count">{this.props.user.surphaze.connections.length} Connections</p>
 				
-				<div className="buttons">
-					<button>CONNECT</button>
-					<button>CHAT</button>
-				</div>
+				{this.props.showingOthersProfile &&
+					<div className={`buttons ${this.props.user._id == Meteor.userId() && "own"}`}>
+						<button>CONNECT</button>
+						<button>CHAT</button>
+					</div>
+				}
 				
 				<p className="short-bio">{processBio(getBio(this.props.user), this.state.shortenBio, this.toggleBio)}</p>
 				

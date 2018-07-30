@@ -420,6 +420,18 @@ button {
                 color: #FFF;
             }
         }
+
+        &.own button {
+            border: 1px solid rgba(0, 0, 0, .2);
+            color: rgba(0, 0, 0, .2);
+            cursor: default;
+
+            &:hover {
+                transform: scale(1);
+                color: rgba(0, 0, 0, .2);
+                background-color: rgba(255, 255, 255, 0);
+            }
+        }
     }
 
     & .short-bio {

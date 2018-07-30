@@ -153,11 +153,14 @@ const Map = compose(
 		confirmLocation={props.confirmLocation}
 		initLocation={props.initLocation}
 		history={props.history}
+		maxZoom={2}
 		forumActions={props.forumActions}
 		setUserLocation={props.authActions.setUserLocation}
 		defaultOptions={{
 			disableDefaultUI: true,
 			styles: mapStyle,
+			minZoom: 2,
+			maxZoom: Meteor.userId() ? 13 : 3,
 		}}
 	>
 		<MarkerClusterer
