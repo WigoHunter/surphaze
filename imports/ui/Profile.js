@@ -12,6 +12,7 @@ import UserNotFound from "./UserNotFound";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import forumActionCreators from "./actions/forum-actions";
+import profileActionCreators from "./actions/profile";
 
 const getAKA = user => {
 	if (user.surphaze.profile.position.title.length > 0) {
@@ -30,6 +31,11 @@ const getAKA = user => {
 
 	return null;
 };
+
+const getProfilePic = user =>
+	user.services.facebook != undefined
+		? `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${user.services.facebook.id}.png)`
+		: "";
 
 const getBio = user =>
 	user.surphaze.profile.bio.length > 0
@@ -67,6 +73,8 @@ class Profile extends React.Component {
 		user: PropTypes.object,
 		forumActions: PropTypes.object,
 		showingOthersProfile: PropTypes.bool,
+		editBio: PropTypes.bool,
+		profileActions: PropTypes.object,
 	}
 
 	constructor(props) {
@@ -168,7 +176,7 @@ class Profile extends React.Component {
 				<div className="bg" style={{ background: `url(${"/background.png"})`, backgroundSize: "cover" }}></div>
 				
 				<div className="me">
-					<div className="user-pic" style={{ background: `url(https://res.cloudinary.com/outwerspace/image/facebook/w_100,h_100,r_max/${this.props.user.services.facebook.id}.png)` }}></div>
+					<div className="user-pic" style={{ background: getProfilePic(this.props.user) }}></div>
 					<h2>{this.props.user.username}</h2>
 					<Link to={`/${this.props.user.username}`}>@{this.props.user.username}</Link>
 				</div>
@@ -182,7 +190,21 @@ class Profile extends React.Component {
 					</div>
 				}
 				
-				<p className="short-bio">{processBio(getBio(this.props.user), this.state.shortenBio, this.toggleBio)}</p>
+				{this.props.showingOthersProfile
+					?
+					<p className="short-bio">
+						{processBio(getBio(this.props.user), this.state.shortenBio, this.toggleBio)}
+					</p>
+					: this.props.editBio
+						?
+						<p>Editing</p>
+						:
+						<div className="short-bio-edit">
+							<i className="fa fa-pencil-square-o profile" onClick={() => this.props.profileActions.toggleEditBio()} />
+							<p>{getBio(this.props.user)}</p>
+						</div>
+				}
+				
 				
 				{/* db.users.find({"surphaze.profile.interested": {$all: ["React"]}} */}
 				<div className="topics-wrapper">
@@ -237,12 +259,21 @@ class Profile extends React.Component {
 const mapStateToProps = state => {
 	return {
 		showingOthersProfile: state.forums.showingOthersProfile,
+		editBio: state.profile.editBio,
+		editInterests: state.profile.editInterests,
+		editFB: state.profile.editFB,
+		editTwitter: state.profile.editTwitter,
+		editLinkedIn: state.profile.editLinkedIn,
+		editGitHub: state.profile.editGitHub,
+		editMedium: state.profile.editMedium,
+		editProductHunt: state.profile.editProductHunt,
 	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		forumActions: bindActionCreators(forumActionCreators, dispatch)
+		forumActions: bindActionCreators(forumActionCreators, dispatch),
+		profileActions: bindActionCreators(profileActionCreators, dispatch),
 	};
 };
 

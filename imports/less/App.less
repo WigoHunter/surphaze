@@ -93,6 +93,7 @@
         position: absolute;
         bottom: 0;
         left: 0;
+        z-index: -1;
 
         & .top {
             & .close {
@@ -347,6 +348,16 @@ button {
         height: 200px;
     }
 
+
+    .fa.profile {
+        color: @lightBlue;
+        margin-right: 5px;
+        opacity: 1;
+        display: inline;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
     & .me {
         align-self: flex-start;
         display: flex;
@@ -394,6 +405,21 @@ button {
         padding: 0 40px;
         margin-top: 12px;
         box-sizing: border-box;
+    }
+
+    & .short-bio-edit {
+        font-size: 16px;
+        width: 100%;
+        padding: 0 40px;
+        margin-top: 12px;
+        box-sizing: border-box;
+        opacity: 1;
+
+        & > p {
+            opacity: 0.7;
+            font-size: 16px;
+            display: inline;
+        }
     }
 
     & .buttons {
