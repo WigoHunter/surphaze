@@ -13,6 +13,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import authActionCreators from "./actions/auth";
 import uiActionCreators from "./actions/ui";
+import mapActionCreators from "./actions/map";
 import forumActionCreators from "./actions/forum-actions";
 
 class MapComponent extends React.Component {
@@ -23,6 +24,7 @@ class MapComponent extends React.Component {
 		forumActions: PropTypes.object,
 		user: PropTypes.object,
 		history: PropTypes.object,
+		mapActions: PropTypes.object,
 	}
 
 	constructor(props) {
@@ -30,6 +32,12 @@ class MapComponent extends React.Component {
 
 		this.setUserLocation = this.setUserLocation.bind(this);
 		this.confirmLocation = this.confirmLocation.bind(this);
+	}
+
+	componentDidMount() {
+		if (Meteor.userId()) {
+			this.props.mapActions.allowZoom();
+		}
 	}
 
 	setUserLocation() {
@@ -130,6 +138,8 @@ const Map = compose(
 
 					refs.map.props.setUserLocation(loc);
 					refs.map.props.confirmLocation();
+				} else {
+					refs.map.props.forumActions.closeForum();
 				}
 			},
 			onMarkerClick: ({ onZoomChange }) => (data, id) => {
@@ -153,14 +163,14 @@ const Map = compose(
 		confirmLocation={props.confirmLocation}
 		initLocation={props.initLocation}
 		history={props.history}
-		maxZoom={2}
 		forumActions={props.forumActions}
 		setUserLocation={props.authActions.setUserLocation}
+		mapActions={props.mapActions}
 		defaultOptions={{
 			disableDefaultUI: true,
 			styles: mapStyle,
 			minZoom: 2,
-			maxZoom: Meteor.userId() ? 13 : 3,
+			maxZoom: props.maxZoom,
 		}}
 	>
 		<MarkerClusterer
@@ -188,7 +198,7 @@ const Map = compose(
 							onClick={() => props.onMarkerClick({
 								lat: user.surphaze.location.lat,
 								lng: user.surphaze.location.lng,
-							}, user.username)}
+							}, user.handle)}
 							defaultIcon={{ url: getProfilePic(user) }}
 						/>
 				)
@@ -203,6 +213,7 @@ const mapStateToProps = state => {
 		isLoaded: state.auths.isLoaded,
 		initLocation: state.auths.initLocation,
 		confirmingLocation: state.ui.confirmingLocation,
+		maxZoom: state.map.maxZoom,
 	};
 };
 
@@ -211,6 +222,7 @@ const mapDispatchToProps = dispatch => {
 		authActions: bindActionCreators(authActionCreators, dispatch),
 		uiActions: bindActionCreators(uiActionCreators, dispatch),
 		forumActions: bindActionCreators(forumActionCreators, dispatch),
+		mapActions: bindActionCreators(mapActionCreators, dispatch),
 	};
 };
 

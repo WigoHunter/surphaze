@@ -32,11 +32,13 @@ ServiceConfiguration.configurations.insert({
 	secret: keys.linkedin.secret,
 });
 
+const processHandle = str => str.replace(" ", "").toLowerCase();
+
 Accounts.onCreateUser(function (options, user) {
 	if (!user.services.facebook) {
 		return user;
 	}
-	user.username = user.services.facebook.name;
+	user.handle = processHandle(user.services.facebook.name);
 	user.emails = [{address: user.services.facebook.email}];
 	// TO REMOVE: TESTING
 	user.surphaze = {
@@ -44,6 +46,7 @@ Accounts.onCreateUser(function (options, user) {
 		connections: [],
 		await_invitation: [],
 		profile: {
+			name: user.services.facebook.name,
 			bio: "",
 			interested: ["Startups", "Computer Science", "Web Development", "React", "Redux", "JavaScript"],
 			position: {

@@ -9,6 +9,7 @@ if (Meteor.isServer) {
 				services: 1,
 				surphaze: 1,
 				username: 1,
+				handle: 1,
 			}
 		});
 	});
@@ -22,6 +23,7 @@ if (Meteor.isServer) {
 				surphaze: 1,
 				services: 1,
 				username: 1,
+				handle: 1,
 			}
 		});
 	});
@@ -34,6 +36,7 @@ if (Meteor.isServer) {
 				services: 1,
 				surphaze: 1,
 				username: 1,
+				handle: 1,
 			}
 		});
 	});

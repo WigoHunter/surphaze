@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import forumActionCreators from "./actions/forum-actions";
 import authActionCreators from "./actions/auth";
 import uiActionCreators from "./actions/ui";
+import mapActionCreators from "./actions/map";
 
 class Landing extends React.Component {
 	static propTypes = {
@@ -21,6 +22,7 @@ class Landing extends React.Component {
 		confirmingLocation: PropTypes.bool,
 		history: PropTypes.object,
 		user: PropTypes.object,
+		mapActions: PropTypes.object,
 	};
 
 	constructor(props) {
@@ -33,6 +35,8 @@ class Landing extends React.Component {
 
 	login() {
 		Meteor.loginWithFacebook({requestPermissions: ["public_profile", "email"]}, (err) => {
+			this.props.mapActions.allowZoom();
+			
 			if (err) {
 				alert("Login Failed: Come back later :)");
 			}
@@ -180,6 +184,7 @@ const mapDispatchToProps = dispatch => {
 		forumActions: bindActionCreators(forumActionCreators, dispatch),
 		authActions: bindActionCreators(authActionCreators, dispatch),
 		uiActions: bindActionCreators(uiActionCreators, dispatch),
+		mapActions: bindActionCreators(mapActionCreators, dispatch),
 	};
 };
 

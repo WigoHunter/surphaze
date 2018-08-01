@@ -177,14 +177,14 @@ class Profile extends React.Component {
 				
 				<div className="me">
 					<div className="user-pic" style={{ background: getProfilePic(this.props.user) }}></div>
-					<h2>{this.props.user.username}</h2>
-					<Link to={`/${this.props.user.username}`}>@{this.props.user.username}</Link>
+					<h2>{this.props.user.surphaze.profile.name}</h2>
+					<Link to={`/${this.props.user.handle}`}>@{this.props.user.handle}</Link>
 				</div>
 				<p className="aka">{getAKA(this.props.user)}</p>
 				<p className="count">{this.props.user.surphaze.connections.length} Connections</p>
 				
 				{this.props.showingOthersProfile &&
-					<div className={`buttons ${this.props.user._id == Meteor.userId() && "own"}`}>
+					<div className="buttons own">	{/* <div className={`buttons ${this.props.user._id == Meteor.userId() && "own"}`}> */}
 						<button>CONNECT</button>
 						<button>CHAT</button>
 					</div>
@@ -287,7 +287,7 @@ const ProfileContainer = withTracker((props) => {
 			user: Meteor.users.findOne({
 				$or: [
 					{ _id: props.match.params.id },
-					{ username: props.match.params.id }
+					{ handle: props.match.params.id }
 				]
 			}) || {},
 		};
