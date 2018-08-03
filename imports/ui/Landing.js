@@ -3,7 +3,7 @@ import { Meteor } from "meteor/meteor";
 import PropTypes from "prop-types";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 
 // Redux
 import { bindActionCreators } from "redux";
@@ -157,6 +157,7 @@ class Landing extends React.Component {
 						<img className="logo" src="/icon.svg" alt="logo" />
 						<p>Surface a VC / Developer / Designer nearby!</p>
 						<button className="start" onClick={() => this.props.forumActions.toggleForum()}>START BROWSING</button>
+						<Link to="/profile" className="edit-profile">Or, polish your profile</Link>
 					</div>
 				);
 			}

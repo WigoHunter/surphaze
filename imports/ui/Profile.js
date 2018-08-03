@@ -3,6 +3,9 @@ import { Meteor } from "meteor/meteor";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { withTracker } from "meteor/react-meteor-data";
+import TagsInput from "react-tagsinput";
+import "react-tagsinput/react-tagsinput.css";
+import ReactTooltip from "react-tooltip";
 import "whatwg-fetch";
 import fetchJsonp from "fetch-jsonp";
 
@@ -18,13 +21,13 @@ const getAKA = user => {
 	if (user.surphaze.profile.position.title.length > 0) {
 		return (
 			<span>
-				AKA {user.surphaze.profile.position.title}{user.surphaze.profile.position.company && ` @${user.surphaze.profile.position.company}`}
+				{user.surphaze.profile.position.title}{user.surphaze.profile.position.company && ` @${user.surphaze.profile.position.company}`}
 			</span>
 		);
 	} else if (user.services.linkedin.addon.positions) {
 		return (
 			<span>
-				AKA {user.services.linkedin.addon.positions.values[0].title}{` @${user.services.linkedin.addon.positions.values[0].company.name}`}
+				{user.services.linkedin.addon.positions.values[0].title}{` @${user.services.linkedin.addon.positions.values[0].company.name}`}
 			</span>
 		);
 	}
@@ -73,7 +76,7 @@ class Profile extends React.Component {
 		user: PropTypes.object,
 		forumActions: PropTypes.object,
 		showingOthersProfile: PropTypes.bool,
-		editBio: PropTypes.bool,
+		edit: PropTypes.bool,
 		profileActions: PropTypes.object,
 	}
 
@@ -83,15 +86,48 @@ class Profile extends React.Component {
 		this.state = {
 			shortenBio: true,
 			shortenInterest: true,
+			interested: [],
+			name: "",
+			handle: "",
+			bio: "",
+			position: {
+				title: "",
+				company: ""
+			},
+			links: {
+				twitter: "",
+				facebook: "",
+				medium: "",
+				linkedin: "",
+				github: "",
+				producthunt: "",
+			}
 		};
 
 		this.toggleBio = this.toggleBio.bind(this);
 		this.toggleInterest = this.toggleInterest.bind(this);
+		this.initEdit = this.initEdit.bind(this);
+		this.cancelEdit = this.cancelEdit.bind(this);
+		this.handleInterestChange = this.handleInterestChange.bind(this);
+
+		this.handleFBChange = this.handleFBChange.bind(this);
+		this.handleGitHubChange = this.handleGitHubChange.bind(this);
+		this.handleLinkedInChange = this.handleLinkedInChange.bind(this);
+		this.handleMediumChange = this.handleMediumChange.bind(this);
+		this.handleTwitterChange = this.handleTwitterChange.bind(this);
+		this.handlePHChange = this.handlePHChange.bind(this);
+		this.handleBioChange = this.handleBioChange.bind(this);
+		this.handleNameChange = this.handleNameChange.bind(this);
+		this.handleHandleChange = this.handleHandleChange.bind(this);
+		this.handleCompanyChange = this.handleCompanyChange.bind(this);
+		this.handleTitleChange = this.handleTitleChange.bind(this);
+		this.submitChanges = this.submitChanges.bind(this);
 	}
 
 	componentWillUnmount() {
 		this.props.forumActions.closingOthersProfile();
 		this.props.forumActions.closeGridMode();
+		this.props.profileActions.closeEdit();
 	}
 
 	componentDidMount() {
@@ -160,6 +196,152 @@ class Profile extends React.Component {
 		});
 	}
 
+	initEdit() {
+		try {
+			this.setState({
+				interested: this.props.user.surphaze.profile.interested,
+				name: this.props.user.surphaze.profile.name,
+				handle: this.props.user.handle,
+				bio: this.props.user.surphaze.profile.bio,
+				position: this.props.user.surphaze.profile.position,
+				links: this.props.user.surphaze.profile.links,
+			});
+		} catch(e) {
+			alert("Something went wrong... Can't fetch profile :(");
+			this.props.history.push("/");	
+		}
+		
+		this.props.profileActions.toggleEdit();
+	}
+
+	cancelEdit() {
+		this.props.profileActions.toggleEdit();
+	}
+
+	handleInterestChange(interested) {
+		if (interested.length > 6) {
+			alert("Please limit to 6 interests :)");
+		} else {
+			this.setState({ interested });
+		}
+	}
+
+	handleBioChange(e) {
+		this.setState({
+			bio: e.target.value
+		});
+	}
+
+	handleFBChange(e) {
+		this.setState({
+			links: {
+				...this.state.links,
+				facebook: e.target.value
+			}
+		});
+	}
+
+	handleGitHubChange(e) {
+		this.setState({
+			links: {
+				...this.state.links,
+				github: e.target.value
+			}
+		});
+	}
+
+	handleLinkedInChange(e) {
+		this.setState({
+			links: {
+				...this.state.links,
+				linkedin: e.target.value
+			}
+		});
+	}
+
+	handlePHChange(e) {
+		this.setState({
+			links: {
+				...this.state.links,
+				producthunt: e.target.value
+			}
+		});
+	}
+
+	handleMediumChange(e) {
+		this.setState({
+			links: {
+				...this.state.links,
+				medium: e.target.value
+			}
+		});
+	}
+
+	handleTwitterChange(e) {
+		this.setState({
+			links: {
+				...this.state.links,
+				twitter: e.target.value
+			}
+		});
+	}
+
+	handleNameChange(e) {
+		this.setState({
+			name: e.target.value
+		});
+	}
+
+	handleHandleChange(e) {
+		this.setState({
+			handle: e.target.value
+		});
+	}
+
+	handleCompanyChange(e) {
+		this.setState({
+			position: {
+				...this.state.position,
+				company: e.target.value
+			}
+		});
+	}
+
+	handleTitleChange(e) {
+		this.setState({
+			position: {
+				...this.state.position,
+				title: e.target.value
+			}
+		});
+	}
+
+	submitChanges() {
+		//validate handle against Meteor.users
+		if (this.state.handle != this.props.user.handle && Meteor.users.findOne({ handle: this.state.handle })) {
+			alert(`Oops. Someone has taken the handle @${this.state.handle}`);
+		} else {
+			const updates = {
+				interested: this.state.interested,
+				name: this.state.name,
+				handle: this.state.handle,
+				bio: this.state.bio,
+				position: this.state.position,
+				links: this.state.links,
+			};
+
+			Meteor.call("update.user.profile", updates, (err) => {
+				if (err) {
+					alert("Profile update failed...");
+					this.props.history.push("/");
+				} else {
+					alert("Profile updated successfuly!");
+					this.props.profileActions.toggleEdit();
+				}
+			});
+		}
+	}
+
 	render() {
 		if (this.props.loading) {
 			return null;
@@ -170,24 +352,51 @@ class Profile extends React.Component {
 				<UserNotFound />
 			);
 		}
-
+		
 		return (
 			<div className="profile">
 				<div className="bg" style={{ background: `url(${"/background.png"})`, backgroundSize: "cover" }}></div>
-				
+
 				<div className="me">
 					<div className="user-pic" style={{ background: getProfilePic(this.props.user) }}></div>
-					<h2>{this.props.user.surphaze.profile.name}</h2>
-					<Link to={`/${this.props.user.handle}`}>@{this.props.user.handle}</Link>
+					{!this.props.showingOthersProfile && this.props.edit
+						?
+						<input type="text" className="name-edit"  value={this.state.name} onChange={this.handleNameChange} />
+						:
+						<h2 refs="name">{this.props.user.surphaze.profile.name}</h2>
+					}
+					{!this.props.showingOthersProfile && this.props.edit
+						?
+						<div className="handle-wrap">@ <input type="text" className="handle-edit"  value={this.state.handle} onChange={this.handleHandleChange} /></div>
+						:
+						<Link to={`/${this.props.user.handle}`}>@{this.props.user.handle}</Link>
+					}
 				</div>
-				<p className="aka">{getAKA(this.props.user)}</p>
-				<p className="count">{this.props.user.surphaze.connections.length} Connections</p>
-				
-				{this.props.showingOthersProfile &&
-					<div className="buttons own">	{/* <div className={`buttons ${this.props.user._id == Meteor.userId() && "own"}`}> */}
-						<button>CONNECT</button>
-						<button>CHAT</button>
+				{!this.props.showingOthersProfile && this.props.edit
+					?
+					<div className="position-wrap">
+						<input type="text" value={this.state.position.title} onChange={this.handleTitleChange} />
+						<div className="company-wrap">
+							@<input type="text" value={this.state.position.company} onChange={this.handleCompanyChange} />
+						</div>
 					</div>
+					:
+					<p className="aka">{getAKA(this.props.user)}</p>
+				}
+				<p className="count">{this.props.user.surphaze.connections.length} Connections</p>
+
+				{this.props.showingOthersProfile
+					?
+					<div className="buttons own">	{/* <div className={`buttons ${this.props.user._id == Meteor.userId() && "own"}`}> */}
+						<button data-tip data-for="connect">CONNECT</button>
+						<button data-tip data-for="chat">CHAT</button>
+						<ReactTooltip id="connect" effect="solid"><span>Feature coming soon!</span></ReactTooltip>
+						<ReactTooltip id="chat" effect="solid"><span>Feature coming soon!</span></ReactTooltip>
+					</div>
+					: !this.props.edit &&
+						<div className="buttons">
+							<button onClick={() => this.initEdit()}><i className="fa fa-pencil-square-o profiled" /> Edit</button>
+						</div>
 				}
 				
 				{this.props.showingOthersProfile
@@ -195,52 +404,106 @@ class Profile extends React.Component {
 					<p className="short-bio">
 						{processBio(getBio(this.props.user), this.state.shortenBio, this.toggleBio)}
 					</p>
-					: this.props.editBio
+					: this.props.edit
 						?
-						<p>Editing</p>
+						<textarea className="bio-edit" placeholder="Tell us about you!" value={this.state.bio} onChange={this.handleBioChange} />
 						:
 						<div className="short-bio-edit">
-							<i className="fa fa-pencil-square-o profile" onClick={() => this.props.profileActions.toggleEditBio()} />
 							<p>{getBio(this.props.user)}</p>
 						</div>
 				}
 				
-				
 				{/* db.users.find({"surphaze.profile.interested": {$all: ["React"]}} */}
 				<div className="topics-wrapper">
 					<h3>#Interested Topics</h3>
-					<div className="topics">
-						{this.props.user.surphaze && this.props.user.surphaze.profile.interested.map((topic, i) => (
-							<Link key={i} className="topic" onClick={() => alert("You will be able to search by tags soon!")} to={`/tag/${topic}`}>{topic}</Link>
-						))}
-					</div>
+					{!this.props.showingOthersProfile && this.props.edit
+						?
+						<TagsInput value={this.state.interested} onChange={this.handleInterestChange} />
+						:
+						<div className="topics">
+							{this.props.user.surphaze && this.props.user.surphaze.profile.interested.map((topic, i) => (
+								<Link key={i} className="topic" data-tip data-for="beta2" onClick={() => alert("You will be able to search by tags soon!")} to={`/tag/${topic}`}>{topic}</Link>
+							))}
+
+							<ReactTooltip id="beta2" effect="solid">
+								<span>Feature scheduled in beta 2!</span>
+							</ReactTooltip>
+						</div>
+					}
 				</div>
 
 				<div className="socials-wrapper">
 					<h3>#Social Media</h3>
-					<div className="social-medias">
-						{this.props.user.surphaze && this.props.user.surphaze.profile.links.facebook &&
-							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-facebook" /></a>
-						}
+					{!this.props.showingOthersProfile && this.props.edit
+						?
+						<div className="social-medias-edit">
+							<div className="sm">
+								<i className="fa fa-facebook" />
+								<input type="text" value={this.state.links.facebook} onChange={this.handleFBChange} />
+							</div>
 
-						{this.props.user.surphaze && this.props.user.surphaze.profile.links.twitter &&
-							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-twitter" /></a>
-						}
+							<div className="sm">
+								<i className="fa fa-twitter" />
+								<input type="text" value={this.state.links.twitter} onChange={this.handleTwitterChange} />
+							</div>
 
-						{this.props.user.surphaze && this.props.user.surphaze.profile.links.linkedin &&
-							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-linkedin" /></a>
-						}
+							<div className="sm">
+								<i className="fa fa-linkedin" />
+								<input type="text" value={this.state.links.linkedin} onChange={this.handleLinkedInChange} />
+							</div>
 
-						{this.props.user.surphaze && this.props.user.surphaze.profile.links.github &&
-							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-github" /></a>
-						}
+							<div className="sm">
+								<i className="fa fa-github" />
+								<input type="text" value={this.state.links.github} onChange={this.handleGitHubChange} />
+							</div>
+							
+							<div className="sm">
+								<i className="fa fa-medium" />
+								<input type="text" value={this.state.links.medium} onChange={this.handleMediumChange} />
+							</div>
 
-						{this.props.user.surphaze && this.props.user.surphaze.profile.links.medium &&
-							<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-medium" /></a>
-						}
-					</div>
+							<div className="sm">
+								<i className="fa fa-product-hunt" />
+								<input type="text" value={this.state.links.producthunt} onChange={this.handlePHChange} />
+							</div>
+						</div>
+						:
+						<div className="social-medias">
+							{this.props.user.surphaze && this.props.user.surphaze.profile.links.facebook &&
+								<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.facebook}><i className="fa fa-facebook" /></a>
+							}
+
+							{this.props.user.surphaze && this.props.user.surphaze.profile.links.twitter &&
+								<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.twitter}><i className="fa fa-twitter" /></a>
+							}
+
+							{this.props.user.surphaze && this.props.user.surphaze.profile.links.linkedin &&
+								<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.linkedin}><i className="fa fa-linkedin" /></a>
+							}
+
+							{this.props.user.surphaze && this.props.user.surphaze.profile.links.github &&
+								<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.github}><i className="fa fa-github" /></a>
+							}
+
+							{this.props.user.surphaze && this.props.user.surphaze.profile.links.medium &&
+								<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.medium}><i className="fa fa-medium" /></a>
+							}
+
+							{this.props.user.surphaze && this.props.user.surphaze.profile.links.producthunt &&
+								<a className="sm" rel="noopener noreferrer" target="_blank" href={this.props.user.surphaze.profile.links.producthunt}><i className="fa fa-product-hunt" /></a>
+							}
+						</div>
+					}
 				</div>
 
+				{!this.props.showingOthersProfile && this.props.edit &&
+					<div className="buttons">
+						<button onClick={() => this.cancelEdit()}>Cancel</button>
+						<button onClick={() => this.submitChanges()}>Submit</button>
+					</div>
+				}
+
+				{/*
 				{!this.props.showingOthersProfile && this.props.user.services.github == null &&
 					<button className="github" onClick={() => this.linkWithGitHub()}>
 						<i className="fa fa-github" />
@@ -251,6 +514,7 @@ class Profile extends React.Component {
 						<i className="fa fa-linkedin" />
 					</button>
 				}
+				*/}
 			</div>
 		);
 	}
@@ -259,14 +523,7 @@ class Profile extends React.Component {
 const mapStateToProps = state => {
 	return {
 		showingOthersProfile: state.forums.showingOthersProfile,
-		editBio: state.profile.editBio,
-		editInterests: state.profile.editInterests,
-		editFB: state.profile.editFB,
-		editTwitter: state.profile.editTwitter,
-		editLinkedIn: state.profile.editLinkedIn,
-		editGitHub: state.profile.editGitHub,
-		editMedium: state.profile.editMedium,
-		editProductHunt: state.profile.editProductHunt,
+		edit: state.profile.edit
 	};
 };
 

@@ -25,10 +25,15 @@ class MapComponent extends React.Component {
 		user: PropTypes.object,
 		history: PropTypes.object,
 		mapActions: PropTypes.object,
+		maxZoom: PropTypes.number,
 	}
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			updated: false,
+		};
 
 		this.setUserLocation = this.setUserLocation.bind(this);
 		this.confirmLocation = this.confirmLocation.bind(this);
@@ -37,6 +42,12 @@ class MapComponent extends React.Component {
 	componentDidMount() {
 		if (Meteor.userId()) {
 			this.props.mapActions.allowZoom();
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.maxZoom != this.props.maxZoom) {
+			this.setState({ updated: !this.state.updated });
 		}
 	}
 
@@ -129,13 +140,14 @@ const Map = compose(
 			onZoomChanged: ({ onZoomChange }) => () => {
 				onZoomChange(refs.map.getZoom());
 			},
-			onClicked: () => (e) => {
+			onClicked: ({ onZoomChange }) => (e) => {
 				if (refs.map.props.initLocation) {
 					let loc = {
 						lat: e.latLng.lat(),
 						lng: e.latLng.lng(),
 					};
 
+					onZoomChange(13);
 					refs.map.props.setUserLocation(loc);
 					refs.map.props.confirmLocation();
 				} else {
@@ -171,6 +183,13 @@ const Map = compose(
 			styles: mapStyle,
 			minZoom: 2,
 			maxZoom: props.maxZoom,
+		}}
+		options={{
+			disableDefaultUI: true,
+			styles: mapStyle,
+			minZoom: 2,
+			maxZoom: props.maxZoom,
+			zoom: props.zoom
 		}}
 	>
 		<MarkerClusterer

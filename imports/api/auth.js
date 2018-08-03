@@ -32,13 +32,13 @@ ServiceConfiguration.configurations.insert({
 	secret: keys.linkedin.secret,
 });
 
-const processHandle = str => str.replace(" ", "").toLowerCase();
+// const processHandle = str => str.replace(" ", "").toLowerCase();
 
 Accounts.onCreateUser(function (options, user) {
 	if (!user.services.facebook) {
 		return user;
 	}
-	user.handle = processHandle(user.services.facebook.name);
+	user.handle = user._id;
 	user.emails = [{address: user.services.facebook.email}];
 	// TO REMOVE: TESTING
 	user.surphaze = {
@@ -48,18 +48,19 @@ Accounts.onCreateUser(function (options, user) {
 		profile: {
 			name: user.services.facebook.name,
 			bio: "",
-			interested: ["Startups", "Computer Science", "Web Development", "React", "Redux", "JavaScript"],
+			interested: ["Surphazer", "Computer Science", "Web Development", "React", "Redux", "JavaScript"],
 			position: {
-				title: "Master Student",
-				company: "Cornell Tech",
-				city: "New York",
+				title: "Maker",
+				company: "Hello World",
+				city: "",
 			},
 			links: {
-				twitter: "https://twitter.com/kevhs_pj",
-				facebook: "https://www.facebook.com/kevinwigohsu",
-				medium: "https://medium.com/@kevin.wcb",
-				linkedin: "https://www.linkedin.com/in/kai-chun-kevin-hsu-5428bbb4/",
-				github: "https://github.com/WigoHunter",
+				twitter: "",
+				facebook: "",
+				medium: "",
+				linkedin: "",
+				github: "",
+				producthunt: "",
 			}
 		}
 	};
