@@ -48,7 +48,7 @@ Accounts.onCreateUser(function (options, user) {
 		profile: {
 			name: user.services.facebook.name,
 			bio: "",
-			interested: ["Surphazer", "Computer Science", "Web Development", "React", "Redux", "JavaScript"],
+			interested: ["Meeting Friends on Surphaze"],
 			position: {
 				title: "Maker",
 				company: "Hello World",
