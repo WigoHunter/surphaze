@@ -1,4 +1,4 @@
-import { keys } from "../keys.json";
+var keys = require("../keys.json").keys;
 
 module.exports = {
   servers: {
@@ -46,7 +46,8 @@ module.exports = {
   proxy: {
     domains: "surphaze.me",
     ssl: {
-      letsEncryptEmail: "kh736@cornell.edu"
+      letsEncryptEmail: "kh736@cornell.edu",
+      forceSSL: true
     }
   }
 
