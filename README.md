@@ -9,14 +9,14 @@ And now it's launched in early beta. Let me know if you are interested in joinin
 
 My email address is kh736@cornell.edu
 
-I will include the list of features available in this beta, as well as the list of features I'm going to build in the future. However, those incoming features might take a while before they go online; I am starting a semester at Cornell Tech on August 24th and will be looking for a summer internship in 2019. So if you want to speed up the development of this project, you can also hire me at the same email address (kh736@cornell.edu) :p
+I will include the list of features available in this beta, as well as another list of features I plan to roll out in the future. However, please do expect a while before those incoming features to come alive soon. I am starting a semester at Cornell Tech on August 24th and will be looking for a software engineering internship in the summer 2019 (targeting Facebook/Google/Twitter/LinkedIn). So if you want to speed up the development of this project, you can also hire me at the same email address (kh736@cornell.edu) :p
 
 ## Demo
 Browsing profiles on map
 ![Image of Screenshot](https://i.imgur.com/QtEcLKo.png)
 
 ## Current Features
-* Create a profile with your FB account
+* Create a profile with your Facebook account
 * Pin yourself on the map
 * Find other makers on the map
 
